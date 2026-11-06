@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export function NumberField({
   label,
@@ -14,7 +14,11 @@ export function NumberField({
   max?: number
 }) {
   const [draft, setDraft] = useState(String(Number(value.toFixed(4))))
-  useEffect(() => setDraft(String(Number(value.toFixed(4)))), [value])
+  const [synced, setSynced] = useState(value)
+  if (synced !== value) {
+    setSynced(value)
+    setDraft(String(Number(value.toFixed(4))))
+  }
   const submit = () => {
     const n = Number(draft)
     if (draft.trim() && Number.isFinite(n) && n >= min && n <= max) {

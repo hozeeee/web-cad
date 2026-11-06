@@ -18,16 +18,16 @@ export function useProjects() {
   const [temporary, setTemporary] = useState(false)
   const [ready, setReady] = useState(false)
   const [error, setError] = useState('')
-  const memory = useRef(new Map<string, Drawing>())
-  const temp = useRef(false)
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const queue = useRef<Promise<void>>(Promise.resolve())
+  const memoryRef = useRef(new Map<string, Drawing>())
+  const tempRef = useRef(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const queueRef = useRef<Promise<void>>(Promise.resolve())
   const doc = useEditor(s => s.doc)
   const revision = useEditor(s => s.revision)
   const refresh = useCallback(async () => {
     setProjects(
-      temp.current
-        ? Array.from(memory.current.values()).map(d => ({
+      tempRef.current
+        ? Array.from(memoryRef.current.values()).map(d => ({
             id: d.id,
             name: d.name,
             updatedAt: d.updatedAt,
@@ -38,25 +38,25 @@ export function useProjects() {
   }, [])
   const write = useCallback(
     async (docs: Drawing[]) => {
-      if (temp.current)
-        docs.forEach(d => memory.current.set(d.id, structuredClone(d)))
+      if (tempRef.current)
+        docs.forEach(d => memoryRef.current.set(d.id, structuredClone(d)))
       else await saveProjects(docs)
       await refresh()
     },
     [refresh],
   )
   const flush = useCallback(async () => {
-    clearTimeout(timer.current)
+    clearTimeout(timerRef.current)
     const current = useEditor.getState().doc
     if (!current)
       return
-    setStatus(temp.current ? '临时编辑 · 请导出备份' : '正在保存…')
-    const job = queue.current.catch(() => {}).then(() => write([current]))
-    queue.current = job
+    setStatus(tempRef.current ? '临时编辑 · 请导出备份' : '正在保存…')
+    const job = queueRef.current.catch(() => {}).then(() => write([current]))
+    queueRef.current = job
     try {
       await job
       if (useEditor.getState().doc === current)
-        setStatus(temp.current ? '临时编辑 · 请导出备份' : '已保存到本地')
+        setStatus(tempRef.current ? '临时编辑 · 请导出备份' : '已保存到本地')
       setError('')
     }
     catch (e) {
@@ -98,7 +98,7 @@ export function useProjects() {
       catch {
         if (!alive)
           return
-        temp.current = true
+        tempRef.current = true
         setTemporary(true)
         useEditor.getState().load(createDrawing())
         setStatus('临时编辑 · 请导出备份')
@@ -111,17 +111,21 @@ export function useProjects() {
     void initialize()
     return () => {
       alive = false
-      clearTimeout(timer.current)
+      clearTimeout(timerRef.current)
     }
   }, [])
+  const [seen, setSeen] = useState<{ doc: typeof doc, revision: number }>()
+  if (ready && doc && (seen?.doc !== doc || seen.revision !== revision)) {
+    setSeen({ doc, revision })
+    setStatus(temporary ? '临时编辑 · 请导出备份' : '待保存…')
+  }
   useEffect(() => {
     if (!ready || !doc)
       return
-    setStatus(temp.current ? '临时编辑 · 请导出备份' : '待保存…')
-    timer.current = setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       void flush().catch(() => {})
     }, 600)
-    return () => clearTimeout(timer.current)
+    return () => clearTimeout(timerRef.current)
   }, [doc, revision, ready, flush])
   useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => {
@@ -143,8 +147,8 @@ export function useProjects() {
   }, [status, flush])
   const open = async (id: string) => {
     await flush()
-    const next = temp.current
-      ? memory.current.get(id)
+    const next = tempRef.current
+      ? memoryRef.current.get(id)
       : await readProject(id)
     if (next) {
       await write([next])
@@ -168,8 +172,8 @@ export function useProjects() {
   }
   const remove = async (id: string) => {
     await flush()
-    if (temp.current)
-      memory.current.delete(id)
+    if (tempRef.current)
+      memoryRef.current.delete(id)
     else await deleteProject(id)
     if (useEditor.getState().doc?.id === id) {
       const next = createDrawing()
@@ -185,8 +189,8 @@ export function useProjects() {
   }
   const backup = async () => {
     await flush()
-    return temp.current
-      ? Array.from(memory.current.values())
+    return tempRef.current
+      ? Array.from(memoryRef.current.values())
       : await allProjects()
   }
   return {

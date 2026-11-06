@@ -73,12 +73,9 @@ export function EntityShape({
       <path
         d={`M ${e.a.x} ${e.a.y} L ${p.x} ${p.y} M ${e.b.x} ${e.b.y} L ${q.x} ${q.y} M ${p.x} ${p.y} L ${q.x} ${q.y}`}
       />
-      {[p, q].map((v, i) => (
-        <path
-          key={i}
-          d={`M ${v.x - tick} ${v.y - tick} L ${v.x + tick} ${v.y + tick}`}
-        />
-      ))}
+      <path
+        d={`M ${p.x - tick} ${p.y - tick} L ${p.x + tick} ${p.y + tick} M ${q.x - tick} ${q.y - tick} L ${q.x + tick} ${q.y + tick}`}
+      />
       <text
         transform={`translate(${midpoint.x} ${midpoint.y}) rotate(${rotation}) scale(1 -1)`}
         y={-3}

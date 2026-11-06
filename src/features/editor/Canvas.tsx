@@ -37,12 +37,12 @@ interface Gesture {
 }
 export function Canvas() {
   const s = useEditor()
-  const container = useRef<HTMLDivElement>(null)
-  const svg = useRef<SVGSVGElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
   const [size, setSize] = useState({ w: 900, h: 700 })
   const [gesture, setGesture] = useState<Gesture | null>(null)
   const gestureRef = useRef<Gesture | null>(null)
-  const space = useRef(false)
+  const spaceRef = useRef(false)
   const [isSpace, setIsSpace] = useState(false)
   const [snapHit, setSnapHit] = useState<SnapResult>({ point: s.cursor, snapped: false })
   const snapped = snapHit.snapped
@@ -69,8 +69,8 @@ export function Canvas() {
     if (!g) {
       if (useEditor.getState().gripEdit)
         useEditor.getState().cancelGrip()
-      if (previous && svg.current?.hasPointerCapture(previous.pointerId))
-        svg.current.releasePointerCapture(previous.pointerId)
+      if (previous && svgRef.current?.hasPointerCapture(previous.pointerId))
+        svgRef.current.releasePointerCapture(previous.pointerId)
     }
   }
   useEffect(() => {
@@ -93,16 +93,16 @@ export function Canvas() {
     }
   }, [])
   useEffect(() => {
-    if (!container.current)
+    if (!containerRef.current)
       return
     const observer = new ResizeObserver(([entry]) =>
       setSize({ w: entry.contentRect.width, h: entry.contentRect.height }),
     )
-    observer.observe(container.current)
+    observer.observe(containerRef.current)
     return () => observer.disconnect()
   }, [])
   useEffect(() => {
-    const element = svg.current
+    const element = svgRef.current
     if (!element)
       return
     const wheel = (event: WheelEvent) => {
@@ -137,7 +137,7 @@ export function Canvas() {
     const keydown = (event: KeyboardEvent) => {
       if (
         document.querySelector('dialog[open]')
-        || container.current?.closest('[inert]')
+        || containerRef.current?.closest('[inert]')
       ) {
         return
       }
@@ -164,7 +164,7 @@ export function Canvas() {
       }
       if (event.code === 'Space') {
         event.preventDefault()
-        space.current = true
+        spaceRef.current = true
         setIsSpace(true)
       }
       if (mod && event.key.toLowerCase() === 'z') {
@@ -213,7 +213,7 @@ export function Canvas() {
       }
     }
     const release = () => {
-      space.current = false
+      spaceRef.current = false
       setIsSpace(false)
     }
     const blur = () => {
@@ -230,7 +230,7 @@ export function Canvas() {
     }
   }, [])
   const local = (event: ReactPointerEvent) => {
-    const r = svg.current!.getBoundingClientRect()
+    const r = svgRef.current!.getBoundingClientRect()
     return { x: event.clientX - r.left, y: event.clientY - r.top }
   }
   const world = (p: Point) => screenToWorld(p, v, size.w, size.h)
@@ -253,7 +253,7 @@ export function Canvas() {
     const raw = world(p)
     event.currentTarget.focus()
     event.currentTarget.setPointerCapture(event.pointerId)
-    if (event.button === 1 || space.current) {
+    if (event.button === 1 || spaceRef.current) {
       event.preventDefault()
       setG({
         kind: 'pan',
@@ -517,11 +517,11 @@ export function Canvas() {
           ? 'panning'
           : ''
       }`}
-      ref={container}
+      ref={containerRef}
       data-background={s.background}
     >
       <svg
-        ref={svg}
+        ref={svgRef}
         data-testid="cad-canvas"
         aria-label="二维绘图画布"
         tabIndex={0}
@@ -615,6 +615,8 @@ export function Canvas() {
                 : 'none'}
             >
               {anchors(shownEntity(e)).map((p, i) => (
+                // 夹点序号本身就是夹点的稳定身份（与 data-grip 对应）
+                // eslint-disable-next-line react/no-array-index-key
                 <g key={i} data-grip={i} style={{ cursor: 'crosshair' }}>
                   <rect
                     x={p.x - 6 / v.scale}
@@ -655,6 +657,8 @@ export function Canvas() {
           </g>
           {s.points.map((p, i) => (
             <circle
+              // 已拾取的点只会追加或整体清空，序号即稳定身份
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
               cx={p.x}
               cy={p.y}

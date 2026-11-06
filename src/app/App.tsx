@@ -40,7 +40,7 @@ import { parseImport } from '../io/schema'
 export function App() {
   const s = useEditor()
   const p = useProjects()
-  const file = useRef<HTMLInputElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
   const [modal, setModal] = useState<'projects' | 'help' | null>(null)
   const [exportMenu, setExportMenu] = useState(false)
   const [sidebar, setSidebar] = useState(() => !window.matchMedia('(max-width: 800px)').matches)
@@ -175,7 +175,7 @@ export function App() {
               title="导入图纸"
               aria-label="导入"
               disabled={busy || !p.ready}
-              onClick={() => file.current?.click()}
+              onClick={() => fileRef.current?.click()}
             >
               <Upload size={15} />
               <span>导入</span>
@@ -363,7 +363,7 @@ export function App() {
       <CommandBar disabled={busy || !p.ready || modal !== null || exchange !== null} />
       <StatusBar status={p.status} retry={() => void run(p.flush)} />
       <input
-        ref={file}
+        ref={fileRef}
         className="hidden-input"
         data-testid="import-file"
         type="file"
