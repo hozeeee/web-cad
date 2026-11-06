@@ -1,0 +1,73 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: Q0DeR-MaG1C-BrAnCh-Fo2-NoN-GiT-Or-No-C0MmIt
+nodes_managed: true
+exported_at: "2026-11-03T07:51:33Z"
+modules:
+    "":
+        dir_name: Forma CAD Web 应用根工程
+        title: Forma CAD Web 应用根工程
+        scope:
+            - index.html
+            - package.json
+            - package-lock.json
+            - tsconfig.json
+            - eslint.config.js
+            - .gitignore
+            - playwright.config.ts
+            - vite.config.ts
+            - vite.single.config.ts
+            - vitest.config.ts
+        source_files: []
+        children:
+            - cad_engine
+            - features
+            - io_storage
+            - shared_components
+        depends_on: []
+        related_to: []
+    cad_engine:
+        dir_name: CAD 几何建模与绘图工具核心
+        title: CAD 几何建模与绘图工具核心
+        scope:
+            - src/cad/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    features:
+        dir_name: CAD 编辑器与项目特性层
+        title: CAD 编辑器与项目特性层
+        scope:
+            - src/features/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: io_storage
+            - path: shared_components
+    io_storage:
+        dir_name: CAD 项目 I_O 与持久化
+        title: CAD 项目 I/O 与持久化
+        scope:
+            - src/io/
+            - src/storage/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: features
+            - path: shared_components
+    shared_components:
+        dir_name: 应用外壳与共享 UI 组件
+        title: 应用外壳与共享 UI 组件
+        scope:
+            - src/components/
+            - src/app/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: features
+            - path: io_storage

@@ -1,0 +1,23 @@
+[package]
+name = "webcad-dwg"
+version = "0.1.0"
+edition = "2021"
+license = "MPL-2.0"
+publish = false
+
+[lib]
+crate-type = [ "cdylib" ]
+
+[dependencies]
+acadrust = { version = "=0.6.8", default-features = false }
+serde_json = "1"
+
+[patch.crates-io]
+web-time = { path = "clock" }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

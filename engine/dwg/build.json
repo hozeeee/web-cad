@@ -1,0 +1,12 @@
+{
+  "engine": "acadrust 0.6.8",
+  "hashes": {
+    "engine/dwg/Cargo.toml": "a1f45b7494faacddcebaa2765b65ce9d28287101720728a68b658006682e1419",
+    "engine/dwg/Cargo.lock": "0e663607391ff72f10d0d2f5b7be4e0234ca8d9bc7e7d5af286542d0aa00f528",
+    "engine/dwg/src/lib.rs": "660f55999f70a52075398155424abe68337b79dc2a6b60ff2d3f50a59d3e4273",
+    "engine/dwg/clock/Cargo.toml": "e052528d804755f7c76c61696b1d669cde9c4ae4d4db8ddf01e15eed85402e2b",
+    "engine/dwg/clock/lib.rs": "eb1f05701b26f7349b2615cc3767c4e810b5dd277cd16445f2911bbc668c9daa",
+    "scripts/build-dwg.mjs": "aced0fec3a19e3082f4b42cc318a4bbc198a2ebf7706758958dba32d0593e312",
+    "src/io/dwg/webcad-dwg.wasm": "b07b19042e11a226484802c5a28b13354c3baf5a17921eb33e5acd188bbd9260"
+  }
+}

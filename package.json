@@ -1,0 +1,54 @@
+{
+  "name": "web-cad",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "^22.22.2 || >=24.15.0"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build:dwg": "node scripts/build-dwg.mjs",
+    "build:standard": "vite build",
+    "build:single": "vite build --config vite.single.config.ts",
+    "build": "npm run typecheck && npm run build:standard && npm run build:single",
+    "preview": "vite preview --host 0.0.0.0",
+    "preview:single": "vite preview --config vite.single.config.ts --host 0.0.0.0"
+  },
+  "dependencies": {
+    "idb": "^8.0.3",
+    "lucide-react": "^1.66.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^10.0.0",
+    "@eslint-react/eslint-plugin": "^5.6.0",
+    "@mlightcad/libredwg-web": "0.8.3",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "eslint": "^10.14.0",
+    "eslint-plugin-format": "^2.0.1",
+    "eslint-plugin-react-refresh": "^0.5.0",
+    "fake-indexeddb": "^6.0.0",
+    "typescript": "~5.7.2",
+    "vite": "^8.3.5",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "katex": "^0.19.1",
+    "minimatch": "^11.0.4",
+    "tinypool": "^2.2.0"
+  }
+}

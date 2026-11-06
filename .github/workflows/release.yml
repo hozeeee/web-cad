@@ -1,0 +1,28 @@
+name: 发布双构建 Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: 打包普通构建
+        working-directory: dist/standard
+        run: zip -r ../webCAD-standard.zip .
+      - name: 创建 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" dist/webCAD-standard.zip 'dist/single/index.html#webCAD.html' --title "webCAD $RELEASE_TAG" --generate-notes --verify-tag
